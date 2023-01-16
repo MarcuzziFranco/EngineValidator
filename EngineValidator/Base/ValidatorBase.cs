@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace EngineValidator.Base;
 
@@ -21,9 +22,18 @@ public abstract class ValidatorBase<T>
         CollectionOfGeneralRulesValidations = new List<AbstractGeneralValidationRule<T>>();
         ruleResults = new List<RuleResult>();
     }
-    protected void AddUniqueValidationRule(AbstractUniqueValidationRule<T> validationRule)
+   
+    public void AddValidationClass<ClassValidate>(bool exclusive=false)
+       where ClassValidate : AbstractUniqueValidationRule<T>, new()
     {
-        CollectionOfUniqueValidations.Add(validationRule);
+        AbstractUniqueValidationRule<T> classValidate = new ClassValidate();
+        classValidate.SetExclusive(exclusive);
+        AddUniqueValidationRule(classValidate);
+    }
+
+    private void AddUniqueValidationRule(AbstractUniqueValidationRule<T> validationUniqueRule)
+    {
+        CollectionOfUniqueValidations.Add(validationUniqueRule);
     }
 
     protected void ExecuteUniqueRulesValidation(T instance)
@@ -32,22 +42,27 @@ public abstract class ValidatorBase<T>
         {
             ruleResults.Add(rule.EvaluateUniqueValidationRule(instance));
             if(rule.IsExclusive())
-                if (!ruleResults.Last().getIsValid()) break;
-            
+                if (!ruleResults.Last().getIsValid()) break;            
         }
     }
 
-
-
-    protected void ExecuteGenetalRuleValidation(T instance)
+    protected void AddGeneralValidationRule(AbstractGeneralValidationRule<T> validationGeneralRule)
     {
-        FieldInfo[] fields = typeof(T).GetFields();
+        CollectionOfGeneralRulesValidations.Add(validationGeneralRule);
+    }
 
-        
+    protected void ExecuteGeneralRuleValidation(T instance)
+    {
+        PropertyInfo[] fields = instance.GetType().GetProperties();
 
-        foreach(var rule in CollectionOfGeneralRulesValidations)
+        foreach (var rule in CollectionOfGeneralRulesValidations)
         {
-
+            for (int i = 0; i < fields.Length; i++)
+            {
+                Console.WriteLine(fields[i]);
+                dynamic field = fields[i];
+                rule.EvaluatelGeneralValidationRule(field);
+            }
         }
     }
 

@@ -1,10 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-using EngineValidator;
+﻿using EngineValidator;
 using EngineValidator.Base.Context;
 
 Console.WriteLine("RUNNING");
-Test test = new Test();
-test.name = "";
+Test test = new Test("Test", "", "12342121232");
 
 ValidatorTest validatorTest = new(test);
 

@@ -8,15 +8,9 @@ namespace EngineValidator.Base;
 
 public abstract class AbstractUniqueValidationRule<T>
 {
-
     protected RuleResult result = new RuleResult();
     private bool exclusive;
-    public AbstractUniqueValidationRule() { }
-    public AbstractUniqueValidationRule(bool exclusive)
-    {
-        this.exclusive = exclusive;
-    }
-
+    public void SetExclusive(bool value) { exclusive = value;}
     public bool IsExclusive() { return exclusive; }
     public abstract RuleResult EvaluateUniqueValidationRule(T instance);
 }
